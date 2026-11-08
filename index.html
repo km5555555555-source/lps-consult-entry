@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- 検索に出さない。URL の t（入口トークン）を外部へ送らない -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>相談窓口</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #fff; }
+  /* 画面いっぱいの iframe（余白・枠線なし。スマートフォン前提） */
+  #app { position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: 0; display: block; }
+  .msg { font-family: system-ui, sans-serif; font-size: 16px; line-height: 1.7; color: #1f2328; padding: 24px 16px; max-width: 640px; margin: 0 auto; }
+</style>
+<!-- 相談者アプリの URL の一覧（デプロイの ID が変わったら config.js だけを直す） -->
+<script src="config.js"></script>
+</head>
+<body>
+<noscript><p class="msg">このページを使うには、JavaScript をオンにしてください。</p></noscript>
+<script>
+/*
+ * 入口ページ（2026-11-08）。QR コードの行き先：このページ?line=DE|DJ|DH|W|L&t=入口トークン
+ * 該当する相談者アプリ（Google Apps Script の Web アプリ）を、t を付けて画面いっぱいの iframe で開く。
+ * 埋め込んで開くと、Google の「このアプリケーションは Google Apps Script のユーザーによって作成されたものです」が出ない
+ * （相談者アプリの URL を直接開くと、Google の仕様で必ず出る）。このページには相談の中身を置かず、何も記録しない。
+ */
+(function () {
+  var GAS_URL = /^https:\/\/script\.google\.com\/(?:a\/macros\/[a-z0-9.-]+\/|macros\/)s\/[A-Za-z0-9_-]+\/exec$/;
+  var q = new URLSearchParams(window.location.search);
+  var line = String(q.get('line') || '').toUpperCase();
+  var token = String(q.get('t') || '');
+  var apps = window.ENTRY_APPS || {};
+  var base = Object.prototype.hasOwnProperty.call(apps, line) ? apps[line] : '';
+  if (!GAS_URL.test(base)) {
+    var p = document.createElement('p');
+    p.className = 'msg';
+    p.textContent = 'ページを開けませんでした。配られた QR コードを、もう一度読み取ってください。';
+    document.body.appendChild(p);
+    return;
+  }
+  // 入口トークンの形（英大文字・数字32字）だけを渡す。ないときは、相談者アプリが「前に送った相談を見る」だけを出す
+  var src = base + (/^[A-Z0-9]{32}$/.test(token) ? '?t=' + token : '');
+  var f = document.createElement('iframe');
+  f.id = 'app';
+  f.src = src;
+  f.title = '相談窓口';
+  f.setAttribute('allow', 'clipboard-write');   // 「番号をコピー」のため
+  f.setAttribute('referrerpolicy', 'no-referrer');
+  document.body.appendChild(f);
+})();
+</script>
+</body>
+</html>
