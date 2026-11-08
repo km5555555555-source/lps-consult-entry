@@ -9,8 +9,11 @@
 <title>相談窓口</title>
 <style>
   html, body { margin: 0; padding: 0; height: 100%; background: #fff; }
-  /* 画面いっぱいの iframe（余白・枠線なし。スマートフォン前提） */
-  #app { position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: 0; display: block; }
+  /* 画面いっぱいの iframe（余白・枠線なし。スマートフォン前提）。いちばん下に開けないときの案内の帯 */
+  body.embed { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
+  #app { flex: 1 1 auto; width: 100%; min-height: 0; border: 0; display: block; }
+  #help { flex: 0 0 auto; font-family: system-ui, sans-serif; font-size: 12px; line-height: 1.5; color: #57606a; background: #f6f8fa; border-top: 1px solid #d0d7de; padding: 4px 12px calc(4px + env(safe-area-inset-bottom)); }
+  #help a { color: #0969da; }
   .msg { font-family: system-ui, sans-serif; font-size: 16px; line-height: 1.7; color: #1f2328; padding: 24px 16px; max-width: 640px; margin: 0 auto; }
 </style>
 <!-- 相談者アプリの URL の一覧（デプロイの ID が変わったら config.js だけを直す） -->
@@ -47,7 +50,25 @@
   f.title = '相談窓口';
   f.setAttribute('allow', 'clipboard-write');   // 「番号をコピー」のため
   f.setAttribute('referrerpolicy', 'no-referrer');
+  document.body.className = 'embed';
   document.body.appendChild(f);
+
+  // 開けないときの案内（2026-11-08）：相談者アプリを直接開くリンク（Google の表示は出るが使える）。
+  // パソコンで Google アカウントに複数ログインしているブラウザでは、直接でも開けないので、シークレットウィンドウを案内する
+  var kid = line === 'DE';
+  var help = document.createElement('div');
+  help.id = 'help';
+  help.appendChild(document.createTextNode(kid ? 'うまく 見えない ときは ' : 'うまく表示されないときは、'));
+  var a = document.createElement('a');
+  a.href = src;
+  a.target = '_top';
+  a.rel = 'noreferrer';
+  a.textContent = kid ? 'ここを おしてね' : 'こちら';
+  help.appendChild(a);
+  help.appendChild(document.createTextNode(kid
+    ? '。それでも ひらけない ときは、おうちの 人に そうだんしてね'
+    : '。それでも開けないときは、シークレットウィンドウ（プライベートブラウズ）で開いてください'));
+  document.body.appendChild(help);
 })();
 </script>
 </body>
