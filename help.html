@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- 検索に出さない。URL の t（入口トークン）を外部へ送らない -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>うまく表示されないとき</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #fff; }
+  body { font-family: system-ui, sans-serif; font-size: 16px; line-height: 1.8; color: #1f2328; }
+  main { max-width: 640px; margin: 0 auto; padding: 24px 16px calc(32px + env(safe-area-inset-bottom)); }
+  h1 { font-size: 20px; line-height: 1.5; margin: 0 0 16px; }
+  h2 { font-size: 17px; line-height: 1.5; margin: 28px 0 8px; }
+  p { margin: 0 0 12px; }
+  .note { color: #57606a; font-size: 14px; }
+  .go { display: block; margin: 16px 0; padding: 14px 16px; border-radius: 8px; background: #0969da; color: #fff; text-align: center; text-decoration: none; font-weight: bold; }
+  .go:focus-visible { outline: 3px solid #0550ae; outline-offset: 2px; }
+  .back { color: #0969da; }
+  .msg { padding: 8px 0; }
+</style>
+<!-- 相談者アプリの URL の一覧（index.html と同じ） -->
+<script src="config.js"></script>
+</head>
+<body>
+<noscript><p class="msg" style="padding:24px 16px">このページを使うには、JavaScript をオンにしてください。</p></noscript>
+<main id="main"></main>
+<script>
+/*
+ * 「うまく表示されないとき」のページ（2026-11-10。依頼文 7.1）。入口ページ（index.html）の下の帯の「こちら」から開く。
+ * help.html?line=DE|DJ|DH|W|L&t=入口トークン を受け取り、
+ *   1. 複数の Google アカウントにログインしているときは、シークレットウィンドウで QR コードを読み直す案内
+ *   2. それでも開けないときに、相談のページ（相談者アプリ）を直接開くリンク（Google の標準の表示が出ることの説明つき）
+ * を出す。小学校（DE）は生徒本人が読める言葉にする。タイトル・本文に LPS を出さない。何も記録しない。
+ */
+(function () {
+  var GAS_URL = /^https:\/\/script\.google\.com\/(?:a\/macros\/[a-z0-9.-]+\/|macros\/)s\/[A-Za-z0-9_-]+\/exec$/;
+  var q = new URLSearchParams(window.location.search);
+  var line = String(q.get('line') || '').toUpperCase();
+  var token = String(q.get('t') || '');
+  var apps = window.ENTRY_APPS || {};
+  var base = Object.prototype.hasOwnProperty.call(apps, line) ? apps[line] : '';
+  var ok = GAS_URL.test(base);
+  var tq = /^[A-Z0-9]{32}$/.test(token) ? token : '';
+  var direct = ok ? base + (tq ? '?t=' + tq : '') : '';
+  var entry = ok ? 'index.html?line=' + encodeURIComponent(line) + (tq ? '&t=' + tq : '') : '';
+  var kid = line === 'DE';
+  var main = document.getElementById('main');
+
+  function add(tag, text, cls) {
+    var e = document.createElement(tag);
+    if (text) e.textContent = text;
+    if (cls) e.className = cls;
+    main.appendChild(e);
+    return e;
+  }
+  function link(text, href, cls) {
+    var a = add('a', text, cls);
+    a.href = href;
+    a.rel = 'noreferrer';
+    return a;
+  }
+
+  if (kid) {
+    document.title = 'うまく 見えない とき';
+    add('h1', 'うまく 見えない とき');
+    add('h2', '1. もう いちど QR コードを よみとってね');
+    add('p', 'スマートフォンや パソコンで、いくつかの Google アカウントに ログイン して いると、ひらけない ことが あります。');
+    add('p', 'その ときは、シークレット ウィンドウ（プライベート ブラウズ）を ひらいて、QR コードを もう いちど よみとってね。');
+    add('h2', '2. それでも ひらけない とき');
+    add('p', 'したの ボタンを おすと、そうだんの ページを ちょくせつ ひらきます。');
+    add('p', 'がめんの 上に、Google の「このアプリケーションは Google Apps Script のユーザーによって作成されたものです」と いう もじが 出る ことが あります。Google が つける もじなので、そのまま つかって だいじょうぶ です。');
+    if (direct) link('そうだんの ページを ひらく', direct, 'go');
+    else add('p', 'ページを ひらけませんでした。くばられた QR コードを、もう いちど よみとってね。', 'msg');
+    add('p', 'それでも ひらけない ときは、おうちの 人に そうだんしてね。');
+    if (entry) { var p0 = add('p'); var b0 = document.createElement('a'); b0.href = entry; b0.className = 'back'; b0.textContent = 'まえの ページに もどる'; p0.appendChild(b0); }
+    return;
+  }
+
+  add('h1', 'うまく表示されないとき');
+  add('h2', '1. シークレットウィンドウで QR コードを読み直す');
+  add('p', '複数の Google アカウントにログインしているブラウザでは、相談のページが開けないことがあります。');
+  add('p', 'その場合は、シークレットウィンドウ（プライベートブラウズ）を開いて、QR コードを読み直してください。');
+  add('h2', '2. それでも開けないとき');
+  add('p', '下のボタンから、相談のページを直接開けます。');
+  add('p', 'このとき、画面の上に Google の「このアプリケーションは Google Apps Script のユーザーによって作成されたものです」という標準の表示が出ることがあります。Google が付ける表示で、問題はありません。そのままお使いください。');
+  if (direct) link('相談のページを直接開く', direct, 'go');
+  else add('p', 'ページを開けませんでした。配られた QR コードを、もう一度読み取ってください。', 'msg');
+  if (entry) { var p1 = add('p'); var b1 = document.createElement('a'); b1.href = entry; b1.className = 'back'; b1.textContent = '前のページに戻る'; p1.appendChild(b1); }
+})();
+</script>
+</body>
+</html>

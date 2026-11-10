@@ -53,21 +53,19 @@
   document.body.className = 'embed';
   document.body.appendChild(f);
 
-  // 開けないときの案内（2026-11-08）：相談者アプリを直接開くリンク（Google の表示は出るが使える）。
-  // パソコンで Google アカウントに複数ログインしているブラウザでは、直接でも開けないので、シークレットウィンドウを案内する
+  // 開けないときの案内（2026-11-08。2026-11-10 にリンク先を変更）：入口ページの中の「うまく表示されないとき」のページ
+  // （help.html）を開く。そのページで、シークレットウィンドウで読み直す案内と、相談者アプリを直接開くリンクを出す
   var kid = line === 'DE';
   var help = document.createElement('div');
   help.id = 'help';
   help.appendChild(document.createTextNode(kid ? 'うまく 見えない ときは ' : 'うまく表示されないときは、'));
   var a = document.createElement('a');
-  a.href = src;
+  a.href = 'help.html?line=' + encodeURIComponent(line) + (/^[A-Z0-9]{32}$/.test(token) ? '&t=' + token : '');
   a.target = '_top';
   a.rel = 'noreferrer';
   a.textContent = kid ? 'ここを おしてね' : 'こちら';
   help.appendChild(a);
-  help.appendChild(document.createTextNode(kid
-    ? '。それでも ひらけない ときは、おうちの 人に そうだんしてね'
-    : '。それでも開けないときは、シークレットウィンドウ（プライベートブラウズ）で開いてください'));
+  help.appendChild(document.createTextNode('。'));
   document.body.appendChild(help);
 })();
 </script>
