@@ -46,10 +46,11 @@
   document.body.className = 'embed';
   document.body.appendChild(f);
 
-  // 開けないとき（ブラウザの設定で埋め込みが止まるなど）は、学校担当アプリを直接開く
+  // 開けないとき（ブラウザの設定で埋め込みが止まる、複数の Google アカウントでログインしていて枠の中に
+  // 「ファイルを開くことができません」が出るなど）は、学校担当アプリを直接開く
   var help = document.createElement('div');
   help.id = 'help';
-  help.appendChild(document.createTextNode('うまく表示されないときは、'));
+  help.appendChild(document.createTextNode('うまく表示されないとき（複数の Google アカウントでログインしているときなど）は、'));
   var a = document.createElement('a');
   a.href = base;
   a.target = '_top';
