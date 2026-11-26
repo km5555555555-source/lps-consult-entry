@@ -10,3 +10,9 @@ window.ENTRY_APPS = {
   W: 'https://script.google.com/macros/s/AKfycbzHZcpRON9pTh9_I1q9ZP4LQQC9Nwc2h4DekT5qBJnRrzD-tMvYV_a3_mUIqsOROMwlqw/exec',
   L: 'https://script.google.com/macros/s/AKfycbzD5udKyGMAlrbfpOgX23Cb02b1up_olv4MRpr-ErO1NUHaNZpz7gWsOMnMr4B53VIPzQ/exec'
 };
+
+/*
+ * 学校担当アプリの入口ページ（school.html）が開く学校担当アプリの URL（2026-11-26）。秘密の値ではない。
+ * いまの値はテスト環境（運営ドメインのテスト用管理アカウントでデプロイしたもの）。
+ */
+window.SCHOOL_APP = 'https://script.google.com/macros/s/AKfycbwhxUtO51A4EiErjBLV0J9kVp3gTw-bjJyHOU6jrn3jsf-awGAONWp1wFz5J3ZxNpymWA/exec';
